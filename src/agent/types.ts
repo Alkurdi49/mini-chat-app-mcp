@@ -1,9 +1,10 @@
 export type AgentStep =
   | {
       kind: 'tool';
-      toolFullName: string; // مثال: "utility.uppercase" أو "filesystem.read_file"
+      toolFullName: string;
       args: Record<string, unknown>;
-      note: string; // شرح بسيط ليش بنعمل الخطوة
+      note: string;
+      saveAs?: string; // ✅ NEW
     }
   | {
       kind: 'final';
@@ -12,8 +13,5 @@ export type AgentStep =
 
 export type AgentState = {
   goal: string;
-  // نحتفظ بنتائج وسيطة
-  artifacts: {
-    lastText?: string;
-  };
+  artifacts: Record<string, string>;
 };

@@ -1,4 +1,4 @@
-# ⚡ Mini Chat App – MCP Agent
+#  Mini Chat App – MCP Agent
 
 A lightweight agentic CLI system built with **TypeScript** and the **Model Context Protocol (MCP)**.
 
@@ -6,23 +6,23 @@ The system accepts high-level user goals, decomposes them into agentic steps, or
 
 ---
 
-## 🚀 Features
+##  Features
 
-- ✅ Terminal chat interface (`npm run dev`)
-- ✅ Agent loop (plan → execute → store intermediate result → finalize)
-- ✅ MCP-based tool orchestration
-- ✅ Filesystem tool (read/write local files)
-- ✅ Utility tool (fetch URL, uppercase text, add numbers)
-- ✅ TypeScript with type safety
-- ✅ One meaningful unit test (Vitest)
+- Terminal chat interface (`npm run dev`)
+-  Agent loop (plan → execute → store intermediate result → finalize)
+-  MCP-based tool orchestration
+-  Filesystem tool (read/write local files)
+-  Utility tool (fetch URL, uppercase text, add numbers)
+-  TypeScript with type safety
+-  One meaningful unit test (Vitest)
 
 ---
 
-## 🏗 Architecture Overview
+##  Architecture Overview
 
 The system is divided into clear layers:
 
-### 1️⃣ Planner (`src/tools/planner.ts`)
+###  Planner (`src/tools/planner.ts`)
 
 - Converts a high-level goal into structured steps.
 
@@ -40,7 +40,7 @@ This separation makes the system easy to extend or replace with an LLM-based pla
 
 ---
 
-### 2️⃣ TaskRunner (Agent Loop) (`src/agent/TaskRunner.ts`)
+### TaskRunner (Agent Loop) (`src/agent/TaskRunner.ts`)
 
 Responsible for:
 
@@ -152,7 +152,7 @@ The architecture also allows replacing the rule-based planner with a more advanc
 
 
 
-🚀 What I Would Improve With More Time
+ What I Would Improve With More Time
 
 Replace rule-based planner with LLM-based planning
 

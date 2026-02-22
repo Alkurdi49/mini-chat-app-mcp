@@ -14,6 +14,9 @@ const UppercaseArgs = z.object({ text: z.string() });
 const AddArgs = z.object({ a: z.number(), b: z.number() });
 const FetchArgs = z.object({ url: z.string().url() });
 
+// ✅ NEW: extract_todos args
+const ExtractTodosArgs = z.object({ text: z.string() });
+
 // 3) لما العميل يطلب "قائمة الأدوات"
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
@@ -44,6 +47,17 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           properties: { url: { type: 'string' } },
           required: ['url']
         }
+      },
+
+      // ✅ NEW TOOL in list
+      {
+        name: 'extract_todos',
+        description: 'Extract TODO items from notes (lines starting with "- " or "TODO:")',
+        inputSchema: {
+          type: 'object',
+          properties: { text: { type: 'string' } },
+          required: ['text']
+        }
       }
     ]
   };
@@ -71,6 +85,25 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
     const res = await fetch(parsed.url);
     const text = await res.text();
     return { content: [{ type: 'text', text: text.slice(0, 3000) }] };
+  }
+
+  // ✅ NEW: extract_todos
+  if (name === 'extract_todos') {
+    const parsed = ExtractTodosArgs.parse(args);
+
+    const lines = parsed.text.split('\n').map((l) => l.trim());
+
+    const todos = lines
+      .filter((l) => l.startsWith('- ') || l.toLowerCase().startsWith('todo:'))
+      .map((l) => l.replace(/^- /, '').replace(/^todo:\s*/i, ''))
+      .filter(Boolean);
+
+    const output =
+      todos.length > 0
+        ? todos.map((t) => `- ${t}`).join('\n')
+        : '- (No TODOs found)';
+
+    return { content: [{ type: 'text', text: output }] };
   }
 
   // لو tool غير معروف

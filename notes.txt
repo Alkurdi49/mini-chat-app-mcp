@@ -1,2 +1,7 @@
-hello world
-this is my note
+Meeting Notes - Week 1
+
+- Finish backend refactor
+- Prepare slides for client presentation
+TODO: Book dentist appointment
+Random thought: improve onboarding docs
+- Review pull requests
