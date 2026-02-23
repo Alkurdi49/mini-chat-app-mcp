@@ -36,14 +36,16 @@ Integrierte Tools:
 Der Ablauf des Systems:
 
 
+```
 Goal → plan() → steps[]
 
 für jeden Schritt:
-wenn tool:
-MCP-Tool aufrufen
-Ergebnis in artifacts speichern
-wenn final:
-Template rendern und stoppen
+  wenn tool:
+    MCP-Tool aufrufen
+    Ergebnis speichern
+  wenn final:
+    stoppen
+```
 
 
 Diese Struktur ermöglicht:
@@ -70,14 +72,19 @@ Der Agent wird:
 ## Anwendung starten
 
 Abhängigkeiten installieren:
-npm install
 
+```bash
+npm install
+```
 CLI starten:
 
+```bash
+npm run dev
+```
 Tests ausführen:
+```bash
 npm test
-
-
+```
 ## Testing
 
 Das Projekt enthält sinnvolle Tests für die Planungslogik.
