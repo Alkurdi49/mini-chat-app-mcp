@@ -16,11 +16,13 @@ async function main() {
     output: process.stdout
   });
 
-  console.log('✅ Mini Chat App (MCP Agent)');
-  console.log('اكتب هدفك (Goal) ثم Enter. اكتب "exit" للخروج.\n');
-  console.log('أمثلة:');
-  console.log('- Read notes.txt and make it uppercase');
-  console.log('- Fetch https://example.com\n');
+ console.log('Mini Chat App (MCP Agent)');
+console.log('Type your goal and press Enter. Type "exit" to quit.\n');
+
+console.log('Examples:');
+console.log('- Read notes.txt and make it uppercase');
+console.log('- Generate a weekly planning summary based on my notes');
+console.log('- Fetch https://example.com\n');
 
   rl.on('line', async (line) => {
     const goal = line.trim();
@@ -37,7 +39,7 @@ async function main() {
       console.log(result);
       console.log('--------------\n');
     } catch (err) {
-      console.error('❌ Error:', err);
+      console.error(' Error:', err);
     }
   });
 

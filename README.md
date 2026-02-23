@@ -1,167 +1,141 @@
-#  Mini Chat App – MCP Agent
+# Mini Chat App – MCP Agent
 
-A lightweight agentic CLI system built with **TypeScript** and the **Model Context Protocol (MCP)**.
+Dieses Projekt implementiert ein leichtgewichtiges agentisches System mit dem **Model Context Protocol (MCP)**.  
 
-The system accepts high-level user goals, decomposes them into agentic steps, orchestrates MCP tools, and produces a final result with minimal human input.
+Das System nimmt ein übergeordnetes Ziel (Goal) vom Benutzer entgegen, zerlegt es in mehrere Schritte, ruft geeignete MCP-Tools auf und erzeugt anschließend eine konsistente, strukturierte Endausgabe.
 
----
+## Architekturüberblick
 
-##  Features
+Die Anwendung basiert auf einer klar getrennten **Plan → Execute → Synthesize** Architektur.
 
-- Terminal chat interface (`npm run dev`)
--  Agent loop (plan → execute → store intermediate result → finalize)
--  MCP-based tool orchestration
--  Filesystem tool (read/write local files)
--  Utility tool (fetch URL, uppercase text, add numbers)
--  TypeScript with type safety
--  One meaningful unit test (Vitest)
+### 1 Planner (`planner.ts`)
+Der Planner:
+- analysiert das High-Level-Ziel,
+- erzeugt strukturierte `AgentStep`s,
+- entscheidet, welche Tools aufgerufen werden sollen,
+- definiert Zwischenspeicher (`saveAs`), um Ergebnisse weiterzuverwerten.
 
----
+### 2 TaskRunner (`TaskRunner.ts`)
+Der TaskRunner:
+- implementiert die Agent-Loop,
+- ruft MCP-Tools Schritt für Schritt auf,
+- speichert Zwischenergebnisse in `artifacts`,
+- rendert die finale Ausgabe anhand eines Templates.
 
-##  Architecture Overview
+### 3 MCP-Tools
+Integrierte Tools:
 
-The system is divided into clear layers:
-
-###  Planner (`src/tools/planner.ts`)
-
-- Converts a high-level goal into structured steps.
-
-Example:
-
-
-
-Becomes:
-
-- Step 1: `filesystem.read_file`
-- Step 2: `utility.uppercase`
-- Final step
-
-This separation makes the system easy to extend or replace with an LLM-based planner later.
-
----
-
-### TaskRunner (Agent Loop) (`src/agent/TaskRunner.ts`)
-
-Responsible for:
-
-- Iterating through planned steps
-- Selecting the correct MCP client
-- Calling tools
-- Storing intermediate results in state
-- Returning the final output
-
-The agent maintains a simple internal state:
-
-```ts
-{
-  goal: string,
-  artifacts: {
-    lastText?: string
-  }
-}
+- `filesystem.read_file` – liest lokale Dateien
+- `utility.extract_todos` – extrahiert TODO-Einträge aus Text
+- `utility.uppercase` – konvertiert Text in Großbuchstaben
+- `utility.fetch_url` – lädt Webinhalte
 
 
- 
- 
+## Agent Loop
+
+Der Ablauf des Systems:
 
 
-MCP Tool Servers
+Goal → plan() → steps[]
 
-The agent does not hardcode tools directly.
-Instead, tools are exposed via MCP servers.
+für jeden Schritt:
+wenn tool:
+MCP-Tool aufrufen
+Ergebnis in artifacts speichern
+wenn final:
+Template rendern und stoppen
 
-🔹 Filesystem Server
 
-Based on @modelcontextprotocol/server-filesystem
+Diese Struktur ermöglicht:
+- mehrstufige Tool-Orchestrierung
+- Nutzung von Zwischenergebnissen
+- saubere Trennung von Planung und Ausführung
 
-Restricted to the project directory
+## Beispiel
 
-Provides file read/write functionality
+**Eingabe:**
 
-🔹 Utility Server (src/mcp/utilityServer.ts)
-
-Custom MCP server exposing:
-
-fetch_url
-
-uppercase
-
-add
-
-This design keeps the agent modular and tool-agnostic
+Generate a weekly planning summary based on my notes
 
 
 
+Der Agent wird:
 
-🔁 Agent Loop Execution Flow
-
-User enters a goal
-
-Planner generates structured steps
-
-TaskRunner:
-
-Selects appropriate MCP client
-
-Calls tool
-
-Stores intermediate result
-
-Stops when final step is reached
-
-Returns final result to CLI
+1. `notes.txt` lesen  
+2. TODO-Einträge extrahieren  
+3. Eine strukturierte Wochenübersicht generieren  
 
 
-How to Run
 
+## Anwendung starten
+
+Abhängigkeiten installieren:
 npm install
-npm run dev
 
-Fetch https://example.com
-or
-Read notes.txt and make it uppercase
+CLI starten:
 
-Running Tests
+Tests ausführen:
 npm test
 
 
+## Testing
 
- Why This Architecture?
+Das Projekt enthält sinnvolle Tests für die Planungslogik.
 
-I separated planning from execution for clarity and extensibility:
+Getestet werden unter anderem:
 
-The Planner focuses on reasoning.
-
-The TaskRunner focuses on orchestration.
-
-Tools are decoupled via MCP servers.
-
-This makes the system:
-
-Modular
-
-Testable
-
-Extensible
-
-Easy to evolve into an LLM-driven agent
-
-The architecture also allows replacing the rule-based planner with a more advanced LLM-based reasoning engine without modifying the execution layer
+- korrekte Multi-Step-Planung
+- Tool-Routing
+- Verzweigungslogik
+- Template-Platzhalter (`{{notes}}`, `{{todos}}`)
 
 
+## Design-Entscheidungen
+
+Diese agentische Architektur ist bewusst gewählt, da komplexe Aufgaben oft nicht mit einem einzelnen Funktionsaufruf lösbar sind.  
+Durch die Aufteilung in Planung und Ausführung kann das System mehrstufige Workflows abbilden, Zwischenergebnisse wiederverwenden und flexibel erweitert werden.
+
+Ich habe bewusst eine Trennung zwischen Planung (Planner) und Ausführung (TaskRunner) gewählt, um:
+
+- Reasoning und Execution klar zu trennen
+- Testbarkeit zu verbessern
+- Erweiterbarkeit durch neue Tools zu ermöglichen
+- die Agent-Logik nachvollziehbar zu strukturieren
+
+Zwischenergebnisse werden mithilfe von `saveAs` gespeichert, sodass spätere Schritte auf vorherige Tool-Outputs zugreifen können.
 
 
+## Technische Highlights
 
- What I Would Improve With More Time
+- TypeScript mit klaren Union Types
+- Strukturierte Agent-Loop
+- MCP-Integration über stdio
+- Saubere Separation of Concerns
+- Automatisierte Tests mit Vitest
 
-Replace rule-based planner with LLM-based planning
 
-Add retry logic and improved error recovery
+## Mögliche Erweiterungen (Future Work)
 
-Add richer memory (multi-artifact support)
+Mit mehr Zeit würde ich das System in Richtung eines stärker „agentischen“ Setups weiterentwickeln:
 
-Add integration tests for tool execution
+- **LLM-basierte Planung (Dynamic Planning):**  
+  Den rule-based Planner durch ein LLM ersetzen, das aus einem Goal einen strukturierten Plan (z. B. JSON) erzeugt.  
+  Dadurch kann der Agent flexibler auf unterschiedliche Aufgaben reagieren.
 
-Improve safety controls around filesystem access
+- **Reflexions-/Validierungsschritt (Reflection):**  
+  Nach jedem Tool-Call die Zwischenergebnisse vom LLM bewerten lassen (z. B. „ist das Ergebnis plausibel?“) und bei Bedarf den Plan anpassen oder einen Retry durchführen.
 
-Add structured logging and tracing
+- **Tool Auto-Discovery via MCP `listTools`:**  
+  Tools nicht hardcoden, sondern zur Laufzeit über MCP entdecken und dem Planner als verfügbare Fähigkeiten bereitstellen.
+
+- **Robustere Fehlerbehandlung & Retries:**  
+  Einheitliche Error-Handling-Strategie (Timeouts, Retries, Fallback-Plan) um die Ausführung stabiler zu machen.
+
+- **Persistente Memory/Artifacts:**  
+  Artifacts und Run-History dauerhaft speichern (z. B. JSON/SQLite), sodass der Agent über mehrere Sessions hinweg Kontext behalten kann.
+
+- **Strukturiertes Output-Format:**  
+  Ergebnisse zunächst als strukturiertes JSON erzeugen und anschließend sauber rendern (CLI oder UI), um Formatierungsfehler zu reduzieren und die Ausgaben weiterverarbeitbar zu machen.
+
+- **Optional: UI statt CLI:**  
+  Eine kleine Web-UI (z. B. React) oder eine TUI, um Goals, Steps und Zwischenergebnisse transparenter darzustellen.
