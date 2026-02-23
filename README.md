@@ -145,4 +145,4 @@ Mit mehr Zeit würde ich das System in Richtung eines stärker „agentischen“
   Ergebnisse zunächst als strukturiertes JSON erzeugen und anschließend sauber rendern (CLI oder UI), um Formatierungsfehler zu reduzieren und die Ausgaben weiterverarbeitbar zu machen.
 
 - **Optional: UI statt CLI:**  
-  Eine kleine Web-UI (z. B. React) oder eine TUI, um Goals, Steps und Zwischenergebnisse transparenter darzustellen.
+  Eine kleine Web-UI  oder eine TUI, um Goals, Steps und Zwischenergebnisse transparenter darzustellen.
